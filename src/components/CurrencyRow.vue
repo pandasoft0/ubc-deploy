@@ -1,19 +1,19 @@
 <template>
-        <tr>
-          <td>{{rank+1}}</td>
-          <td>{{info.name}}</td>
-          <td><img class = "coinimg" :src="iconbase"/></td>
-          <td>{{info.base}}</td>
-          <td>{{ticker.percent}}</td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-        </tr>
+  <tr>
+    <td>{{ rank + 1 }}</td>
+    <td><img class="coinimg1" :src="iconbase" />{{ info.name }} <span class = "basetext">{{info.base}}</span></td>
+    <td>${{test.USD}}</td>
+    <td></td>
+    <td>{{ test1.RAW[info.base].USD.CHANGEPCT24HOUR}}%</td>
+    <td>${{ test1.RAW[info.base].USD.MKTCAP}}</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td>:</td>
+  </tr>
 
-    <!-- <div class="coin-box" @dblclick.stop="openDetails">
+  <!-- <div class="coin-box" @dblclick.stop="openDetails">
         <div class="row no-gutters coin-info">
             <div class="col-7">
                 <div class="font-weight-bold">{{info.name}}</div>
@@ -48,40 +48,59 @@
     </div> -->
 </template>
 <script>
-  import {unSubscribeSymbol} from '../services/binance'
-  export default {
-    props: ['ticker', 'info', 'rank'],
-    data() {
-      return {
-        showDropDown: false
+// import { unSubscribeSymbol } from "../services/binance";
+export default {
+  props: ["ticker", "info", "rank"],
+  created() {
+    this.getPrice();
+    this.getAvg();
+  },
+  data() {
+    return {
+      showDropDown: false,
+      test: {},
+      test1: {},
+    };
+  },
+  mounted() {
+
+  },
+  computed: {
+    iconbase() {
+      return `https://s2.coinmarketcap.com/static/img/coins/64x64/${this.info.cid}.png`;
+    },
+  },
+  methods: {
+    async getPrice() {
+      let url = `https://min-api.cryptocompare.com/data/price?fsym=${this.info.base}&tsyms=USD&api_key=07b3474f4fda1065bf19525769c45ede4d5200ea39384ed9ff9d91e02cdfe593`;
+      this.test = url;
+      console.log(url);
+      let response = await fetch(url);
+      if (response.ok) {
+        let json = await response.json();
+        this.test = json;
+        this.news = json["Data"];
+        console.log(json);
+      } else {
+        console.log("Fetch Error :-S", response.status);
       }
     },
-    mounted() {
-      console.log(this.ticker);
-    },
-    computed: {
-        iconbase() {
-            return `https://s2.coinmarketcap.com/static/img/coins/64x64/${this.info.cid}.png`
-        }
-    },
-    methods: {
-      onDropDown() {
-        this.showDropDown = true;
-      },
-      removeCard() {
-        this.showDropDown = false;
-        unSubscribeSymbol(this.info.symbol);
-        this.$store.commit('REMOVE_COIN_PAIR', this.info.symbol)
-      },
-      openDetails() {
-        this.showDropDown = false;
-        this.$router.push({name: 'infoview', params: { 'symbol': this.info.symbol }})
-      },
-      closeDropDown() {
-        this.showDropDown = false;
+    async getAvg() {
+      let url = `https://min-api.cryptocompare.com/data/pricemultifull?fsyms=${this.info.base}&tsyms=USD&api_key=07b3474f4fda1065bf19525769c45ede4d5200ea39384ed9ff9d91e02cdfe593`;
+      this.test1 = url;
+      console.log(url);
+      let response = await fetch(url);
+      if (response.ok) {
+        let json = await response.json();
+        this.test1 = json;
+        this.news = json["Data"];
+        console.log(json);
+      } else {
+        this.test1 = 'response.status';
+        console.log("Fetch Error :-S", response.status);
       }
     },
-    components: {
-    }
-  }
+  },
+  components: {},
+};
 </script>

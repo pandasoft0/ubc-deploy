@@ -1,5 +1,5 @@
 <template>
-    <div class="content-box">
+    <div class="">
         <!-- <div class="menu-bar">
             <v-select id="base" :options="currencyList[quote]['pairs']" :clearable="false" v-model="baseCurrency"
                       placeholder="Select Token"></v-select>
@@ -8,13 +8,24 @@
                       @input="resetBase" style="width: 100px"></v-select>
             <button class="add-btn" @click="addCoinPair"><i class="fa fa-plus fa-lg" aria-hidden="true"></i></button>
         </div> -->
+        <AdView></AdView>
+        <div class="topboard">
+            <TopGainer></TopGainer>
+            <TopLoser></TopLoser>
+            <RecentAdd></RecentAdd>
+        </div>
         <CryptoBoard></CryptoBoard>
-        <button class="clear-btn" @click="swap">Swap</button>
+        <!-- <button class="clear-btn" @click="swap">Swap</button> -->
     </div>
 </template>
 <script>
     import coins from '@/assets/group.json'
+    import AdView from '@/views/AdView.vue'
+    import TopGainer from '@/components/TopGainer.vue'
+    import TopLoser from '@/components/TopLoser.vue'
+    import RecentAdd from '@/components/RecentAdd.vue'
     import CryptoBoard from '@/views/CryptoBoard.vue'
+    // import axios from 'axios';
     import {isEmpty} from '../util/Utility'
     import {subscribeSymbol} from '../services/binance'
     import {mapState} from 'vuex'
@@ -34,6 +45,7 @@
                     subscribeSymbol(currency.symbol);
                 });
             }
+            
         },
         computed: {
             ...mapState(['currencies']),
@@ -42,7 +54,11 @@
             }
         },
         components: {
-            CryptoBoard
+            CryptoBoard,
+            AdView,
+            TopGainer,
+            TopLoser,
+            RecentAdd,
         },
         methods: {
             resetBase() {
